@@ -1,5 +1,10 @@
 # Music Replacer MVP
 
+**Version:** 0.1.0 · **Build:** 0001
+
+Build archives use the numeric suffix format:
+`music-replacer-mvp-0001.zip`, `music-replacer-mvp-0002.zip`, and so on.
+
 Первый MVP: проверяет OGG/Vorbis и патчит одну запись STRQ/STQ. ARC пока не
 перепаковывается: пользователь вручную заменяет извлечённый STQ в `title.arc`.
 Исходный ARC не трогается.
@@ -58,7 +63,10 @@ python3 patch_stq.py \
 
 GUI автоматически создаст patched STQ, скопирует audio как `.sngw` в
 `nativePC\\sound\\stream\\DDDA_AI_Overhaul\\music\\title\\` и сохранит
-`report.json`. ARC пока остаётся ручным шагом.
+`report.json`. Имя replacement берётся из выбранного файла: например,
+`tittleddn_b.ogg` автоматически становится `tittleddn_b.sngw` и получает
+STQ target name `DDDA_AI_Overhaul\\music\\title\\tittleddn_b`.
+ARC пока остаётся ручным шагом.
 
 ## Важное ограничение MVP
 

@@ -1,0 +1,10 @@
+Music Replacer MVP
+Version: 0.1.0
+Build: 0001
+
+Build 0001:
+- First minimal GUI wrapper.
+- OGG/Vorbis probe.
+- STQ name/metadata patch.
+- Automatic .sngw output path.
+- Manual ARC replacement remains required.

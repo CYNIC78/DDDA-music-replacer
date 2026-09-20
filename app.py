@@ -11,11 +11,12 @@ from tkinter import filedialog, messagebox, ttk
 
 ROOT = Path(__file__).resolve().parent
 PATCHER = ROOT / "patch_stq.py"
+BUILD = "0001"
 
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("DDDA Music Replacer — MVP")
+        self.title(f"DDDA Music Replacer — MVP build {BUILD}")
         self.geometry("720x430")
         self.minsize(680, 390)
         self.configure(bg="#f4f5f7")
@@ -83,16 +84,22 @@ class App(tk.Tk):
         out_root.mkdir(parents=True, exist_ok=True)
         out_stq = out_root / "patched" / "Tittle_bgm.stq"
         try:
+            audio_path = Path(self.audio.get())
+            # Имя replacement — из выбранного файла: tittleddn_b.ogg ->
+            # target DDDA_AI_Overhaul\\music\\title\\tittleddn_b.sngw.
+            stem = audio_path.stem
+            target_name = "DDDA_AI_Overhaul\\music\\title\\" + stem
             cmd = [sys.executable, str(PATCHER), self.stq.get(), self.audio.get(),
-                   "--out", str(out_stq), "--loop", self.loop.get()]
+                   "--out", str(out_stq), "--target", target_name,
+                   "--loop", self.loop.get()]
             proc = subprocess.run(cmd, cwd=str(ROOT), capture_output=True, text=True)
             if proc.returncode:
                 raise RuntimeError(proc.stderr.strip() or proc.stdout.strip())
             report = json.loads(proc.stdout)
             # The game resolves STQ names below nativePC/sound/stream and adds .sngw.
-            target = out_root / "nativePC" / "sound" / "stream" / "DDDA_AI_Overhaul" / "music" / "title" / "tittleddn_a.sngw"
+            target = out_root / "nativePC" / "sound" / "stream" / "DDDA_AI_Overhaul" / "music" / "title" / (stem + ".sngw")
             target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(self.audio.get(), target)
+            shutil.copyfile(audio_path, target)
             (out_root / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
             self.status.set(f"Готово. STQ: {out_stq}\nSNGW: {target}\nТеперь замените STQ внутри title.arc вручную.")
             messagebox.showinfo("Готово", "Replacement подготовлен.\n\nSTQ пока нужно вручную вернуть в title.arc.")
