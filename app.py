@@ -11,7 +11,7 @@ from tkinter import filedialog, messagebox, ttk
 
 ROOT = Path(__file__).resolve().parent
 PATCHER = ROOT / "patch_stq.py"
-BUILD = "0002"
+BUILD = "0004"
 
 class App(tk.Tk):
     def __init__(self):
@@ -20,6 +20,8 @@ class App(tk.Tk):
         self.geometry("720x430")
         self.minsize(680, 390)
         self.configure(bg="#f4f5f7")
+        self.archive = tk.StringVar(value="title.arc")
+        self.source_key = tk.StringVar(value=r"bgm\wave2\Tittle_DDN")
         self.stq = tk.StringVar()
         self.audio = tk.StringVar()
         self.output = tk.StringVar()

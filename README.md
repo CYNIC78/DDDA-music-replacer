@@ -1,6 +1,10 @@
 # Music Replacer MVP
 
-**Version:** 0.1.0 · **Build:** 0002
+**Version:** 0.1.0 · **Build:** 0004
+
+Known slot descriptions are stored in `catalog/known_roles.json`. They are
+UX labels only: the authoritative identity remains the archive + fixed STQ
+slot index. Unknown tracks are valid and are not blocked.
 
 Build archives use the numeric suffix format:
 `music-replacer-mvp-0001.zip`, `music-replacer-mvp-0002.zip`, and so on.
