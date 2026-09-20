@@ -11,7 +11,7 @@ from tkinter import filedialog, messagebox, ttk
 
 ROOT = Path(__file__).resolve().parent
 PATCHER = ROOT / "patch_stq.py"
-BUILD = "0004"
+BUILD = "0005"
 
 class App(tk.Tk):
     def __init__(self):

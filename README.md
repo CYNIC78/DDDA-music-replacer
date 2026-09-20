@@ -1,6 +1,6 @@
 # Music Replacer MVP
 
-**Version:** 0.1.0 · **Build:** 0004
+**Version:** 0.1.0 · **Build:** 0005
 
 Known slot descriptions are stored in `catalog/known_roles.json`. They are
 UX labels only: the authoritative identity remains the archive + fixed STQ

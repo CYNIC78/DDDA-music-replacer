@@ -1,6 +1,10 @@
 Music Replacer MVP
 Version: 0.1.0
-Build: 0004
+Build: 0005
+
+Build 0005:
+- Slot descriptions are editable metadata, separate from slot identity.
+- Added tentative No_020 label: Гран-Сорен (user hypothesis).
 
 Build 0004:
 - Added catalog/known_roles.json with confirmed user-provided slot labels.

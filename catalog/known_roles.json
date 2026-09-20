@@ -1,6 +1,7 @@
 {
   "schema": 1,
   "description": "Известные функции игровых музыкальных слотов. Неизвестные слоты не считаются ошибкой и показываются по оригинальному label.",
+  "confidence_policy": "confirmed | tentative | unknown; descriptions are editable project metadata and never affect slot identity",
   "roles": {
     "Tittle_DDN": "Музыка меню / титульный трек",
     "gamestart": "Звуковой эффект подтверждения/перехода после нажатия клавиши",
@@ -21,6 +22,7 @@
     "StaffRoll_A": "Титры",
     "StaffRoll_B": "Титры",
     "No_046": "Редактор персонажа",
+    "No_020": "Гран-Сорен (предположительно)",
     "No_018": "Кассардис",
     "Casadhis_END": "Окончание темы Кассардиса",
     "DD_Kasou": "Павший Город / Fallen City",
@@ -32,5 +34,11 @@
     "ept_17_olr_58511_e": "Болтовня возле эпитафии",
     "ept_18_ash_58512_e": "Болтовня возле эпитафии",
     "ept_19_grt_58513_e": "Болтовня возле эпитафии"
+  },
+  "confidence": {
+    "No_020": "tentative"
+  },
+  "source": {
+    "No_020": "user hypothesis"
   }
 }
