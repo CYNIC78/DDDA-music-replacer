@@ -1,6 +1,12 @@
 Music Replacer MVP
 Version: 0.1.0
-Build: 0005
+Build: 0006
+
+Build 0006:
+- Added scrollable STQ slot browser.
+- Displays fixed slot index, current label, description, duration, channels and loop.
+- Search works across labels and known descriptions.
+- Selected slot drives replacement preparation; no manual key entry needed.
 
 Build 0005:
 - Slot descriptions are editable metadata, separate from slot identity.

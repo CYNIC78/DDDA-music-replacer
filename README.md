@@ -1,6 +1,10 @@
 # Music Replacer MVP
 
-**Version:** 0.1.0 · **Build:** 0005
+**Version:** 0.1.0 · **Build:** 0006
+
+Build 0006 adds a scrollable STQ slot browser. Select a row instead of typing
+an STQ key; the browser shows fixed index, current label, description, duration,
+channels and loop metadata. Unknown descriptions remain allowed.
 
 Known slot descriptions are stored in `catalog/known_roles.json`. They are
 UX labels only: the authoritative identity remains the archive + fixed STQ
