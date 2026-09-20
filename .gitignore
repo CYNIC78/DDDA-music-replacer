@@ -1,0 +1,41 @@
+# Python cache and local environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+ENV/
+
+# Build/package output
+build/
+dist/
+*.egg-info/
+
+# Local IDE/editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Windows/local OS noise
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Local MVP work products
+output/
+builds/
+backups/
+reports/
+work/
+
+# Large/private game assets and archives
+*.arc
+*.stq
+*.sngw
+*.ogg
+*.wav
+
+# Local test artifacts
+*.report.json
