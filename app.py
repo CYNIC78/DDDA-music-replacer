@@ -11,7 +11,7 @@ from tkinter import filedialog, messagebox, ttk
 
 ROOT = Path(__file__).resolve().parent
 PATCHER = ROOT / "patch_stq.py"
-BUILD = "0001"
+BUILD = "0002"
 
 class App(tk.Tk):
     def __init__(self):
@@ -58,6 +58,7 @@ class App(tk.Tk):
         ttk.Button(card, text="Собрать replacement", style="Accent.TButton", command=self.build).grid(row=6, column=2, sticky="e", pady=(22, 0))
         ttk.Label(outer, textvariable=self.status, style="Sub.TLabel", wraplength=660).pack(anchor="w", pady=(12, 0))
         card.columnconfigure(1, weight=1)
+        card.columnconfigure(2, weight=1)
 
     def _row(self, parent, row, label, var, hint):
         ttk.Label(parent, text=label, style="TLabel").grid(row=row, column=0, sticky="w", pady=7)
@@ -77,32 +78,37 @@ class App(tk.Tk):
             if p: self.output.set(p)
 
     def build(self):
-        if not all((self.stq.get(), self.audio.get(), self.output.get())):
-            messagebox.showwarning("Не хватает данных", "Выберите STQ, replacement audio и папку результата.")
+        if not all((self.source_key.get(), self.stq.get(), self.audio.get(), self.output.get())):
+            messagebox.showwarning("Не хватает данных", "Укажите ключ трека и выберите STQ, replacement audio и папку результата.")
             return
         out_root = Path(self.output.get())
         out_root.mkdir(parents=True, exist_ok=True)
-        out_stq = out_root / "patched" / "Tittle_bgm.stq"
+        archive_dir = "title" if self.archive.get() == "title.arc" else "main"
+        stq_name = "Tittle_bgm.stq" if self.archive.get() == "title.arc" else "bgm.stq"
+        out_stq = out_root / "patched" / stq_name
         try:
             audio_path = Path(self.audio.get())
-            # Имя replacement — из выбранного файла: tittleddn_b.ogg ->
-            # target DDDA_AI_Overhaul\\music\\title\\tittleddn_b.sngw.
+            # tittleddn_b.ogg -> DDDA_AI_Overhaul\\music\\title\\tittleddn_b
+            # Для bbs_rpg тот же принцип, но каталог replacement = main.
             stem = audio_path.stem
-            target_name = "DDDA_AI_Overhaul\\music\\title\\" + stem
+            target_name = "DDDA_AI_Overhaul\\music\\" + archive_dir + "\\" + stem
             cmd = [sys.executable, str(PATCHER), self.stq.get(), self.audio.get(),
-                   "--out", str(out_stq), "--target", target_name,
-                   "--loop", self.loop.get()]
+                   "--source", self.source_key.get(), "--out", str(out_stq),
+                   "--target", target_name, "--loop", self.loop.get()]
             proc = subprocess.run(cmd, cwd=str(ROOT), capture_output=True, text=True)
             if proc.returncode:
                 raise RuntimeError(proc.stderr.strip() or proc.stdout.strip())
             report = json.loads(proc.stdout)
             # The game resolves STQ names below nativePC/sound/stream and adds .sngw.
-            target = out_root / "nativePC" / "sound" / "stream" / "DDDA_AI_Overhaul" / "music" / "title" / (stem + ".sngw")
+            target = out_root / "nativePC" / "sound" / "stream" / "DDDA_AI_Overhaul" / "music" / archive_dir / (stem + ".sngw")
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(audio_path, target)
+            report["archive"] = self.archive.get()
+            report["source_key"] = self.source_key.get()
+            report["target_directory"] = archive_dir
             (out_root / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-            self.status.set(f"Готово. STQ: {out_stq}\nSNGW: {target}\nТеперь замените STQ внутри title.arc вручную.")
-            messagebox.showinfo("Готово", "Replacement подготовлен.\n\nSTQ пока нужно вручную вернуть в title.arc.")
+            self.status.set(f"Готово. STQ: {out_stq}\nSNGW: {target}\nТеперь замените STQ внутри {self.archive.get()} вручную.")
+            messagebox.showinfo("Готово", f"Replacement подготовлен.\n\nSTQ пока нужно вручную вернуть в {self.archive.get()}.")
         except Exception as e:
             self.status.set("Ошибка: " + str(e))
             messagebox.showerror("Сборка не выполнена", str(e))

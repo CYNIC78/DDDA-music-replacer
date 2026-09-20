@@ -1,6 +1,11 @@
 Music Replacer MVP
 Version: 0.1.0
-Build: 0001
+Build: 0002
+
+Build 0002:
+- Archive selector: title.arc or bbs_rpg.arc.
+- Source STQ key is editable.
+- Output category is separated into title/ and main/.
 
 Build 0001:
 - First minimal GUI wrapper.

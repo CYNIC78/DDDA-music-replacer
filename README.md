@@ -1,9 +1,13 @@
 # Music Replacer MVP
 
-**Version:** 0.1.0 · **Build:** 0001
+**Version:** 0.1.0 · **Build:** 0002
 
 Build archives use the numeric suffix format:
 `music-replacer-mvp-0001.zip`, `music-replacer-mvp-0002.zip`, and so on.
+
+Архивы разделены: `title.arc` содержит титл и использует каталог
+`music/title/`, а `bbs_rpg.arc` содержит остальные треки и использует
+`music/main/`. Один проект сможет собрать один или оба архива.
 
 Первый MVP: проверяет OGG/Vorbis и патчит одну запись STRQ/STQ. ARC пока не
 перепаковывается: пользователь вручную заменяет извлечённый STQ в `title.arc`.
