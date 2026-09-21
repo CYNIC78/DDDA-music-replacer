@@ -1,6 +1,91 @@
 Music Replacer MVP
 Version: 0.1.0
-Build: 0006
+Build: 0021
+
+Build 0021:
+- Added immutable vanilla baseline snapshots on first installation.
+- Repeated installs keep history snapshots without overwriting the vanilla baseline.
+- Added Remove mod / Restore vanilla operation with installed-state hash protection.
+- Kept last-install rollback as a separate operation.
+
+Build 0020:
+- Added Install mod and Restore buttons.
+- Install creates STQ-only backups before copying packed ARC/SNGW into Game root.
+- Restore verifies the installed STQ hash and refuses to overwrite unexpected changes.
+- Restore repacks only the affected ARC after replacing its backed-up STQ.
+
+Build 0019:
+- Reduced default window height and vertical padding so the bottom build/status controls are visible immediately.
+- Made the title smaller and the slot table slightly denser.
+- Removed manual STQ browsing from the main flow; the detected STQ is shown read-only.
+- Updated status text to reflect automatic ARC packing.
+
+Build 0018:
+- Batch patching now addresses fixed STQ slot indexes, not mutable current names.
+- Rebuilding a previously patched archive works even when namePtr already points into DDDA_Music_Replacer.
+- Legacy name lookup remains available in patch_stq.py for direct CLI use.
+
+Build 0017:
+- Replaced single-slot preparation with batch project build.
+- All configured replacements in title.arc and bbs_rpg.arc are applied in one run.
+- Each affected ARC is unpacked from the current Game root, patched, packed and copied to Build output.
+- One report.json covers the whole package.
+
+Build 0016:
+- Project save/load has its own remembered last project directory.
+- Game root, ARCtool path, namespace and archive states are saved globally in project JSON.
+- Switching title/bbs_rpg no longer overwrites the shared game root.
+
+Build 0015:
+- Added per-user settings in %APPDATA%/DDDA_Music_Replacer/settings.json.
+- File dialogs remember game root, ARCtool, build output, STQ and audio folders.
+- Settings are separate from projects and are never written into the game folder.
+
+Build 0014:
+- Added automatic pack step after selected STQ patch when ARCtool is configured.
+- Only the isolated extracted STQ is replaced before packing.
+- Packed ARC is copied to Build output/nativePC/rom/.
+- Without ARCtool/work context, the safe extracted-STQ workflow remains available.
+
+Build 0013:
+- Integrated ARCtool.exe selection and background unpack.
+- Game root archive selection now locates the expected STQ automatically.
+- Added title/bbs_rpg archive validation and slot count report.
+- Original ARC is copied into isolated work/ before ARCtool runs.
+
+Build 0012:
+- GUI separates read-only Game root from Build output.
+- Game root scan detects nativePC/rom/title.arc and bbs_rpg.arc.
+- Build output is forbidden from being the same folder as the game.
+- Game root is saved in project JSON.
+
+Build 0011:
+- Added ARC discovery/adapter primitives using the documented ARCtool flags.
+- Added STQ-only snapshot/verification module; full ARC is never the restore baseline.
+- Archive validation distinguishes title.arc/Tittle_bgm.stq and bbs_rpg.arc/bgm.stq.
+
+Build 0010:
+- Added editable project namespace, default DDDA_Music_Replacer.
+- Namespace is validated and saved in project JSON.
+- Target STQ names and output folders use the selected namespace.
+
+Build 0009:
+- OGG/Vorbis comment metadata is read, including LOOPSTART, LOOPEND and LOOPLENGTH.
+- Loop policy `metadata` uses valid replacement tags; original loop slots default to it.
+- Invalid/missing metadata remains visible and can fall back to full/custom.
+
+Build 0008:
+- Loop dialog opens centered over the main window.
+- Separate editable state is preserved for title.arc and bbs_rpg.arc.
+- Added save/load project JSON buttons for long editing sessions.
+
+Build 0007:
+- Replacement appears directly in each slot row.
+- Loop policy appears directly in each row; original loop slots default to full cycle.
+- Double-click description to edit it in place.
+- Double-click replacement to choose a file.
+- Double-click loop to choose full/none/custom samples.
+- Column headings sort the slot list.
 
 Build 0006:
 - Added scrollable STQ slot browser.

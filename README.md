@@ -1,88 +1,157 @@
-# Music Replacer MVP
+# DDDA Music Replacer
 
-**Version:** 0.1.0 · **Build:** 0006
+**Version:** 0.1.0 · **Build:** 0021
 
-Build 0006 adds a scrollable STQ slot browser. Select a row instead of typing
-an STQ key; the browser shows fixed index, current label, description, duration,
-channels and loop metadata. Unknown descriptions remain allowed.
+Практический инструмент для создания и установки музыкальных replacement-модов для Dragon's Dogma: Dark Arisen.
 
-Known slot descriptions are stored in `catalog/known_roles.json`. They are
-UX labels only: the authoritative identity remains the archive + fixed STQ
-slot index. Unknown tracks are valid and are not blocked.
+## Что умеет текущий релиз
 
-Build archives use the numeric suffix format:
-`music-replacer-mvp-0001.zip`, `music-replacer-mvp-0002.zip`, and so on.
+- автоматически находит `title.arc` и `bbs_rpg.arc` внутри выбранного `Game root`;
+- распаковывает архивы через внешний `ARCtool.exe` в изолированную рабочую копию;
+- автоматически находит и проверяет ожидаемый STQ:
+  - `title.arc` → `Tittle_bgm.stq`;
+  - `bbs_rpg.arc` → `bgm.stq`;
+- показывает фиксированные STQ slot indexes, текущие labels, descriptions, длительность, channels и loop metadata;
+- поддерживает неизвестные слоты и редактируемые descriptions;
+- сохраняет project JSON с replacement-ами, loop settings, namespace и состоянием обоих архивов;
+- запоминает каждую папку выбора отдельно;
+- применяет все настроенные replacement-ы пакетно за один запуск;
+- патчит слоты по фиксированному индексу, поэтому повторная сборка уже изменённого STQ безопасна;
+- создаёт `.sngw` в пользовательском namespace;
+- автоматически перепаковывает каждый затронутый ARC;
+- создаёт отдельный `Build output` и не изменяет исходный Game root при обычной сборке;
+- устанавливает готовый мод одной кнопкой;
+- создаёт STQ-only backup перед установкой;
+- восстанавливает только STQ и проверяет hash, прежде чем перезаписывать состояние.
 
-Архивы разделены: `title.arc` содержит титл и использует каталог
-`music/title/`, а `bbs_rpg.arc` содержит остальные треки и использует
-`music/main/`. Один проект сможет собрать один или оба архива.
+## Рекомендуемый workflow
 
-Первый MVP: проверяет OGG/Vorbis и патчит одну запись STRQ/STQ. ARC пока не
-перепаковывается: пользователь вручную заменяет извлечённый STQ в `title.arc`.
-Исходный ARC не трогается.
-
-Подтверждено на игре: STQ действительно управляет физическим путём файла.
-Движок разрешает target name относительно `nativePC\\sound\\stream\\` и
-сам добавляет расширение `.sngw`. Поэтому replacement устанавливается так:
+Подготовка материала выполняется в DAW или другом аудиоредакторе:
 
 ```text
-nativePC\\sound\\stream\\DDDA_AI_Overhaul\\music\\title\\tittleddn_a.sngw
+DAW / audio editor
+  → нужное количество каналов
+  → Vorbis/Ogg
+  → loop points и metadata
+  → Music Replacer
+  → batch build
+  → install
 ```
 
-Исходный OGG/Vorbis можно использовать как содержимое, но файл обязан иметь
-расширение `.sngw`. То есть для текущего теста важны одновременно Vorbis-
-данные и игровой контейнерный суффикс `.sngw`; отдельный CreateFile-hook не
-нужен.
+Обычная музыка игры использует 5.1, а треки с речью могут быть stereo. Программа проверяет channels конкретного STQ slot, поэтому replacement должен соответствовать исходной записи. Для loop используется приоритет:
 
-## Первый тест титла
+```text
+custom loop > Vorbis metadata > full-file fallback
+```
+
+Loop editor с waveform и предпрослушиванием является необязательной будущей функцией. На текущем этапе точки loop удобно выставлять в DAW.
+
+## Установка и запуск
+
+Требования:
+
+- Windows;
+- Python 3.10+;
+- внешний `ARCtool.exe`;
+- установленная игра с доступными `nativePC/rom/title.arc` и/или `nativePC/rom/bbs_rpg.arc`.
+
+Запуск:
+
+```text
+run_gui.bat
+```
+
+В программе:
+
+1. выбрать `Game root`;
+2. выбрать `ARCtool.exe`;
+3. выбрать `title.arc` или `bbs_rpg.arc`;
+4. нажать `Распаковать и загрузить`;
+5. заполнить replacement-ы и loop settings;
+6. при необходимости сохранить проект;
+7. нажать `Собрать пакет` или `Установить мод`.
+
+Ручной выбор STQ в обычном workflow не требуется: программа сама находит ожидаемый STQ после ARCtool unpack. Найденный путь отображается только для информации.
+
+## Build output
+
+Пакет имеет стандартный mod-root:
+
+```text
+Build output/
+├── nativePC/
+│   ├── rom/
+│   │   ├── title.arc
+│   │   └── bbs_rpg.arc
+│   └── sound/stream/DDDA_Music_Replacer/
+│       └── music/
+│           ├── title/*.sngw
+│           └── main/*.sngw
+└── report.json
+```
+
+Создаётся только затронутый ARC. Для установки вручную можно копировать содержимое `Build output/nativePC` в `nativePC` игры, но обычно достаточно кнопки `Установить мод`.
+
+Namespace по умолчанию:
+
+```text
+DDDA_Music_Replacer
+```
+
+Он должен быть относительным ASCII-именем без запрещённых символов и `..`.
+
+## Безопасность установки и восстановления
+
+`Установить мод` сначала сохраняет только STQ затронутого архива в:
+
+```text
+<Game root>/.DDDA_Music_Replacer/backups/
+```
+
+Структура backup разделяет два назначения:
+
+```text
+backups/
+├── baseline/   первый vanilla STQ, сохраняется при первой установке
+└── history/    snapshot перед каждой последующей установкой
+```
+
+`Удалить мод` восстанавливает baseline vanilla. `Откатить последнюю` использует history для возврата последнего состояния. Baseline не перезаписывается последующими установками.
+
+Backup содержит STQ, manifest и SHA-256, а не целый ARC. При восстановлении программа:
+
+- проверяет целостность backup;
+- сравнивает текущий STQ с hash установленного состояния;
+- отказывается молча перезаписывать STQ, если после установки он был изменён другим модом или вручную;
+- перепаковывает только соответствующий ARC после восстановления STQ.
+
+## Проекты и настройки
+
+Project JSON хранит состояние конкретного проекта. Глобальная память диалогов хранится отдельно в:
+
+```text
+%APPDATA%/DDDA_Music_Replacer/settings.json
+```
+
+Там находятся последние папки Game root, ARCtool, Build output, проектов, STQ и replacement-а. Эти настройки не записываются в игру и не попадают в mod package.
+
+## Сборка из исходников
+
+Проверка синтаксиса:
 
 ```bash
-python3 patch_stq.py \
-  ../builds/84.98/resources/extracted_assets/game_main/title/sound/stream/bgm/Tittle_bgm.stq \
-  /path/to/tittleddn_a.ogg \
-  --out /tmp/Tittle_bgm.patched.stq
+python3 -m py_compile app.py patch_stq.py core/*.py
 ```
 
-По умолчанию:
+Build archives используют цифровые суффиксы:
 
-- источник: `bgm\\wave2\\Tittle_DDN`;
-- target name: `DDDA_AI_Overhaul\\music\\title\\tittleddn_a`;
-- replacement должен быть Vorbis, 6 каналов, 48000 Hz;
-- loop: от sample 0 до конца replacement;
-- добавляется новая строка в string blob, остальные байты STQ сохраняются;
-- создаются `.report.json` с исходными/новыми полями и SHA-256.
-
-Для one-shot:
-
-```bash
---loop none
+```text
+music-replacer-mvp-0001.zip
+music-replacer-mvp-0002.zip
+...
+music-replacer-mvp-0020.zip
 ```
 
-Для ручных loop points:
+## Внешние зависимости
 
-```bash
---loop full --loop-in 2734966 --loop-out 4078967
-```
-
-## Простой GUI
-
-Запустите `run_gui.bat` двойным кликом. В окне выберите:
-
-1. извлечённый `Tittle_bgm.stq`;
-2. replacement `.ogg` или `.sngw`;
-3. папку результата;
-4. режим loop.
-
-GUI автоматически создаст patched STQ, скопирует audio как `.sngw` в
-`nativePC\\sound\\stream\\DDDA_AI_Overhaul\\music\\title\\` и сохранит
-`report.json`. Имя replacement берётся из выбранного файла: например,
-`tittleddn_b.ogg` автоматически становится `tittleddn_b.sngw` и получает
-STQ target name `DDDA_AI_Overhaul\\music\\title\\tittleddn_b`.
-ARC пока остаётся ручным шагом.
-
-## Важное ограничение MVP
-
-Сейчас патчируется только извлечённый STQ. После проверки результата его нужно
-вручную вернуть в `title.arc` и протестировать. ARC reader/writer добавляется
-после подтверждения, что изменение `namePtr` действительно перенаправляет
-движок на новый путь без CreateFile-хука.
+ARCtool остаётся внешней зависимостью и выбирается в GUI. Исходные ARC игры не изменяются при обычной сборке. Для работы GUI нужен Python; отдельный EXE в текущем релизе не обязателен и пока не поставляется.

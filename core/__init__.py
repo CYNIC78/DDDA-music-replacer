@@ -1,0 +1,1 @@
+"""Music Replacer core modules."""
